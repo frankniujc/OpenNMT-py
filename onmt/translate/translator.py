@@ -17,7 +17,6 @@ import onmt.inputters as inputters
 import onmt.opts as opts
 import onmt.decoders.ensemble
 
-
 def build_translator(opt, report_score=True, logger=None, out_file=None):
     if out_file is None:
         out_file = codecs.open(opt.output, 'w+', 'utf-8')
@@ -28,9 +27,11 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
 
     load_test_model = onmt.decoders.ensemble.load_test_model \
         if len(opt.models) > 1 else onmt.model_builder.load_test_model
+    import pdb; pdb.set_trace()
     fields, model, model_opt = load_test_model(opt, dummy_opt.__dict__)
 
     scorer = onmt.translate.GNMTGlobalScorer(opt)
+
 
     translator = Translator(model, fields, opt, model_opt,
                             global_scorer=scorer, out_file=out_file,
@@ -112,6 +113,15 @@ class Translator(object):
                 "beam_parent_ids": [],
                 "scores": [],
                 "log_probs": []}
+
+    def log_probality(self, batch, data):
+        batch_size = batch.batch_size
+        data_type = data.data_type
+
+        src, encc_states, memory_bank, src_lengths = self._run_encoder(batch, data_type)
+        # TODO
+
+
 
     def translate(self,
                   src_path=None,
